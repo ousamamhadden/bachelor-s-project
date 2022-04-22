@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ref-redis-config
+data:
+  redis-config: | 
+    requirepass mypassword
+    protected-mode no
+    dir /redis-master-data
+    appendonly no
+    save ""

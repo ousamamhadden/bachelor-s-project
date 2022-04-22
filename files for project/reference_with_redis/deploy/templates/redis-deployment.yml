@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: refredis
+  labels:
+    app: refredis
+spec:
+  serviceName: "refredis-cluster"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: refredis
+  template:
+    metadata:
+      labels:
+        app: refredis
+        role: ngcp-service
+    spec:    
+      containers:
+        - name: refredis
+          image: bitnami/redis
+          command:
+          - redis-server
+          - "/redis-master/redis.conf"
+          env:
+          - name: MASTER
+            value: "true"
+          readinessProbe:
+            failureThreshold: 3
+            exec:
+              command:
+              - redis-cli
+              - ping
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            exec:
+              command:
+              - redis-cli
+              - ping
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 6
+            exec:
+              command:
+              - redis-cli
+              - ping
+            periodSeconds: 10
+            initialDelaySeconds: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}     
+          ports:
+          - name: redis
+            containerPort: 6379 
+          volumeMounts:
+          - mountPath: /redis-master-data
+            name: ref-redis
+          - mountPath: /redis-master
+            name: config    
+      securityContext:
+        runAsGroup: 10001
+        runAsUser: 10001
+        supplementalGroups: []
+        fsGroup: 20001
+      volumes:
+      - name: config
+        configMap:
+          name: ref-redis-config
+          items:
+          - key: redis-config
+            path: redis.conf
+  volumeClaimTemplates:                     
+  - metadata:
+      name: ref-redis
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100Mi

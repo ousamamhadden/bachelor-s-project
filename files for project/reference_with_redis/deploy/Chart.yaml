@@ -1,0 +1,6 @@
+apiVersion: v2
+name: reference_with_redis
+description: NGCP reference_with_redis
+type: application
+version: 0.2.0
+appVersion: 1.16.0

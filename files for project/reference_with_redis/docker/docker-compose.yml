@@ -1,0 +1,26 @@
+#                Copyright 2018 Motorola Solutions, Inc.
+#                           All Rights Reserved.
+#
+#                Motorola Solutions Confidential Restricted
+version: "3"
+services:
+  mini_group_call:
+    image: mini_group_call:latest
+    environment:
+      - CONCURRENT_REQUESTS=10
+      - ITERATIONS=10
+    depends_on:
+      - refredis
+    networks:
+      - network_test_test
+
+  refredis:
+    image: bitnami/redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - network_test_test
+
+networks:
+  network_test_test:
+    driver: bridge

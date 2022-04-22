@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}
+    role: ngcp-service
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        role: ngcp-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9568"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity: {}
+      containers:
+        - env:
+            - name: DEBUG
+              value: {{ .Values.containers.env.debug | quote }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CONCURRENT_REQUESTS
+              value: "{{ .Values.params.concurrent_requests }}"
+            - name: ITERATIONS
+              value: "{{ .Values.params.iterations }}"
+            - name: DOCKER_IMAGE
+              value: "{{ .Values.image.registry}}/ngcp/rareferenceredis:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry }}/ngcp/rareferenceredis:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ .Release.Name }}
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthcheck
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthcheck
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}  
+      # dnsPolicy: ClusterFirst
+      # restartPolicy: Always
+      # schedulerName: default-scheduler
+      securityContext:
+        runAsGroup: 10001
+        runAsUser: 10001
+        supplementalGroups: []
+        fsGroup: 20001
+      # terminationGracePeriodSeconds: 30

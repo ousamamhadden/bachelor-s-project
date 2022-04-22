@@ -1,0 +1,48 @@
+version: "3"
+services:
+
+  RAKV1:
+    image: rakv:latest
+    environment:
+      - RA_OR_NOT=no
+      - START_RA_CLUSTER=yaa
+      - COOKIE=chocolatebuiscitcookie
+    hostname: host1
+    networks:
+      - dev_net
+
+  RAKV2:
+    image: rakv:latest
+    environment:
+      - RA_OR_NOT=not
+      - START_RA_CLUSTER=nooo
+      - COOKIE=chocolatebuiscitcookie
+    hostname: host2
+    networks:
+      - dev_net
+
+  RAKV3:
+    image: rakv:latest
+    environment:
+      - RA_OR_NOT=no
+      - START_RA_CLUSTER=nejjj
+      - COOKIE=chocolatebuiscitcookie
+    hostname: host3
+    networks:
+      - dev_net
+  RAKV4:
+    image: rakv:latest
+    environment:
+      - RA_OR_NOT=yay
+      - START_RA_CLUSTER=nejjj
+      - COOKIE=chocolatebuiscitcookie
+    hostname: host4
+    networks:
+      - dev_net
+
+networks:
+  dev_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.30.0/24"

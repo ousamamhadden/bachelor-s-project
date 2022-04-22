@@ -1,0 +1,19 @@
+replicaCount: 1
+containers:
+  env:
+    debug: false
+params:
+  concurrent_requests: ""
+  timebetweencommands: ""
+
+image:
+  registry: ""
+  pullPolicy: Always
+  tag: ""
+resources:
+  requests:
+    cpu: 1
+    memory: 2Gi
+  limits:
+    cpu: 1
+    memory: 2Gi

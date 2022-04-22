@@ -1,0 +1,23 @@
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: {{ .Release.Name }}-policy
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: {{ .Release.Name }}
+#   policyTypes:
+#     - Ingress
+#   ingress:
+#     - from:
+#       - podSelector:
+#           matchLabels:
+#             app: metricbeat-daemonset
+#       - namespaceSelector: {}
+#       ports:
+#         - port: 9568
+#           protocol: TCP
+#     - from:
+#       - podSelector:
+#           matchLabels:
+#             app: {{ .Release.Name }}-client

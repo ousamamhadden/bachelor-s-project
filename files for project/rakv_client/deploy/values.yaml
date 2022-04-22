@@ -1,0 +1,23 @@
+replicaCount: 1
+containers:
+  env:
+    debug: false
+    traceSampling: "1.0"
+    jaeger:
+      enabled: true
+params:
+  maxcommands: ""
+  timebetweencommands: ""
+  maxkills: "6"
+  timebetweenkills: "300000"
+image:
+  registry: ""
+  pullPolicy: Always
+  tag: ""
+resources:
+  requests:
+    cpu: 1
+    memory: 2Gi
+  limits:
+    cpu: 1
+    memory: 2Gi
